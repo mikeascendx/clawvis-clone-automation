@@ -170,24 +170,17 @@ git add .
 git commit -m "Initial clone output"
 
 # 2. Create private repo and push
-# Preferred owner: mikeascendx
-# Fallback owner (if create permission is missing): clawvisx
-gh repo create mikeascendx/[repo-name] --private --source=. --remote=origin --push || \
-  gh repo create clawvisx/[repo-name] --private --source=. --remote=origin --push
+gh repo create clawvisx/[repo-name] --private --source=. --remote=origin --push
 
 # 3. Add collaborators
-# If repo is under mikeascendx
-gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/mikeascendx -f permission=push || true
-gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/KIshiharaHCI -f permission=push || true
-
-# If repo is under clawvisx fallback
-gh api -X PUT repos/clawvisx/[repo-name]/collaborators/mikeascendx -f permission=push || true
-gh api -X PUT repos/clawvisx/[repo-name]/collaborators/KIshiharaHCI -f permission=push || true
+gh api -X PUT repos/clawvisx/[repo-name]/collaborators/mikeascendx -f permission=push
+gh api -X PUT repos/clawvisx/[repo-name]/collaborators/KIshiharaHCI -f permission=push
 ```
 
 Replace `[repo-name]` with the auto-derived repo name.
 
-After all commands succeed, reply with the final GitHub repo URL.
+After all commands succeed, reply with the final GitHub repo URL:
+`https://github.com/clawvisx/[repo-name]`
 
 ---
 
@@ -201,9 +194,8 @@ Before every cloning run, execute this checklist automatically:
    - `gh api graphql -f query='{ viewer { login } }'`
 2. **Git push preflight**
    - `gh auth setup-git`
-3. **Owner permission preflight**
-   - Try `mikeascendx` first
-   - If create permission is blocked, fallback to `clawvisx` and add collaborators
+3. **Owner confirmation**
+   - All repos are always created under `clawvisx`
 4. **No manual dependency**
    - Do not ask human to run commands if auth + permissions are already valid
 5. **Post-push confirmation**
