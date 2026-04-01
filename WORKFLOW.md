@@ -18,10 +18,9 @@ Open the Clawvis Assistant chat and send:
 Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone-automation/main/cloning-loop-plan.md
 
 Target: [URL]
-GH_TOKEN: [your_github_pat]
 ```
 
-Clawvis derives the repo name from the domain automatically. The `GH_TOKEN` line is only needed until GitHub auth is permanently configured on Clawvis's machine (one-time setup).
+Clawvis derives the repo name from the domain automatically. GitHub token is loaded from `~/.openclaw/.env` automatically — no need to include it in the message.
 
 ---
 
