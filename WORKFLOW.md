@@ -18,10 +18,9 @@ Open the Clawvis Assistant chat and send:
 Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone-automation/main/cloning-loop-plan.md/cloning-loop-plan.md
 
 Target: [URL]
-Repo name: [site-name-clone]
 ```
 
-That's all you need to send. Everything else is handled by the plan doc.
+That's all you need to send. Clawvis derives the repo name from the domain automatically. Everything else is handled by the plan doc.
 
 ---
 
@@ -61,7 +60,6 @@ Open the repo link Clawvis sends. You and Kenji can review the clone and leave f
 Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone-automation/main/cloning-loop-plan.md/cloning-loop-plan.md
 
 Target: https://pala-consulting.de/
-Repo name: pala-consulting-clone
 ```
 
 ---

@@ -113,6 +113,51 @@ Not all sections on a target site need to be cloned. Before starting the loop:
 
 ---
 
+## Page Discovery
+
+Before cloning, crawl the target site and identify all pages:
+- Find all internal links (nav menu, footer links, etc.)
+- List every unique page URL
+- Clone each page individually following the section loop
+- Each page becomes its own `.html` file in the output
+
+---
+
+## Output Directory Structure
+
+All output must follow this exact structure — no exceptions:
+
+```
+[repo-name]/
+├── index.html          ← homepage
+├── about.html          ← if site has an about page
+├── services.html       ← if site has a services page
+├── contact.html        ← if site has a contact page
+├── [other-pages].html  ← any other pages found during crawl
+├── css/
+│   └── styles.css      ← all styles consolidated here
+└── images/
+    └── [all scraped images from the site]
+```
+
+Rules:
+- One `.html` file per page
+- All CSS in `css/styles.css` — no inline styles
+- All images downloaded locally into `images/` — no external image URLs in the HTML
+- HTML files reference local assets (`css/styles.css`, `images/filename.ext`)
+
+---
+
+## Repo Name — Auto-derived
+
+Do not wait for a repo name to be provided. Derive it automatically from the target domain:
+- `pala-consulting.de` → `pala-consulting-clone`
+- `example-agency.com` → `example-agency-clone`
+
+Strip the TLD, append `-clone`. Use this as both the local workspace folder name and the GitHub repo name.
+
+---
+
 ## Output & Delivery
 
 When all real sections are cloned and assembled into a single `index.html`, run the following commands exactly — do not ask for confirmation, do not ask the human to run anything:
