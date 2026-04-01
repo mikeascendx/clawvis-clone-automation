@@ -115,16 +115,29 @@ Not all sections on a target site need to be cloned. Before starting the loop:
 
 ## Output & Delivery
 
-When all real sections are cloned and assembled into a single `index.html`:
+When all real sections are cloned and assembled into a single `index.html`, run the following commands exactly — do not ask for confirmation, do not ask the human to run anything:
 
-1. Create a **private GitHub repository** named after the target site (e.g. `pala-consulting-clone`)
-2. Push all output files to it
-3. Add the following users as collaborators with **write access**:
-   - `mikeascendx`
-   - `KIshiharaHCI`
-4. Reply with the GitHub repo URL
+```bash
+# 1. Initialize and commit
+cd /home/clawvis/.openclaw/workspace/[repo-name]
+git init -b main
+git add .
+git commit -m "Initial clone output"
 
-GitHub access is already configured via token — no additional auth steps needed.
+# 2. Create private repo and push
+gh repo create mikeascendx/[repo-name] --private --source=. --remote=origin --push
+
+# 3. Add collaborators
+gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/mikeascendx -f permission=push
+gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/KIshiharaHCI -f permission=push
+```
+
+Replace `[repo-name]` with the repo name given in the task.
+
+After all commands succeed, reply with the GitHub repo URL:
+`https://github.com/mikeascendx/[repo-name]`
+
+**Do not ask the human to run any of these commands. Do not ask for GitHub authentication. The token is already configured — execute everything autonomously.**
 
 ---
 
