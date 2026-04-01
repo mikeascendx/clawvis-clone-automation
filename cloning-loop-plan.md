@@ -165,9 +165,6 @@ When all real sections are cloned and assembled, run the following commands exac
 If `GH_TOKEN` is provided in the task, use it inline as shown. If `gh auth status` already shows authenticated, skip the export line.
 
 ```bash
-# 0. Load token from .env
-source ~/.openclaw/.env
-
 # 1. Initialize and commit
 cd /home/clawvis/.openclaw/workspace/[repo-name]
 git init -b main

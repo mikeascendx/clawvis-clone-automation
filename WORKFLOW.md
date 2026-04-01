@@ -20,7 +20,7 @@ Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone
 Target: [URL]
 ```
 
-Clawvis derives the repo name from the domain automatically. GitHub token is loaded from `~/.openclaw/.env` automatically — no need to include it in the message.
+Clawvis derives the repo name from the domain automatically. GitHub token is set globally in `~/.bashrc` — available in every session automatically.
 
 ---
 
