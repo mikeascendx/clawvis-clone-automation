@@ -104,5 +104,29 @@ Repeat per section until the page is done.
 
 ---
 
+## Section Selection Rule
+
+Not all sections on a target site need to be cloned. Before starting the loop:
+- Scroll through the full page
+- Skip any sections that are clearly placeholder or template (lorem ipsum, generic headings, empty blocks, dummy content)
+- Only clone sections with real content — actual company info, services, team, contact details, etc.
+
+---
+
+## Output & Delivery
+
+When all real sections are cloned and assembled into a single `index.html`:
+
+1. Create a **private GitHub repository** named after the target site (e.g. `pala-consulting-clone`)
+2. Push all output files to it
+3. Add the following users as collaborators with **write access**:
+   - `mikeascendx`
+   - `KIshiharaHCI`
+4. Reply with the GitHub repo URL
+
+GitHub access is already configured via token — no additional auth steps needed.
+
+---
+
 ## First Step
 Pick one real target page. Run the loop on one section. See if it works.
