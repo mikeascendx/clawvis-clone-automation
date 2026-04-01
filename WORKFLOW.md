@@ -15,12 +15,13 @@ Kenji sends you a URL and any notes (e.g. "skip placeholder sections", "only rea
 Open the Clawvis Assistant chat and send:
 
 ```
-Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone-automation/main/cloning-loop-plan.md/cloning-loop-plan.md
+Follow instructions: https://raw.githubusercontent.com/mikeascendx/clawvis-clone-automation/main/cloning-loop-plan.md
 
 Target: [URL]
+GH_TOKEN: [your_github_pat]
 ```
 
-That's all you need to send. Clawvis derives the repo name from the domain automatically. Everything else is handled by the plan doc.
+Clawvis derives the repo name from the domain automatically. The `GH_TOKEN` line is only needed until GitHub auth is permanently configured on Clawvis's machine (one-time setup).
 
 ---
 

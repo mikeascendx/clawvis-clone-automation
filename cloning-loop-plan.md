@@ -160,9 +160,14 @@ Strip the TLD, append `-clone`. Use this as both the local workspace folder name
 
 ## Output & Delivery
 
-When all real sections are cloned and assembled into a single `index.html`, run the following commands exactly — do not ask for confirmation, do not ask the human to run anything:
+When all real sections are cloned and assembled, run the following commands exactly — do not ask for confirmation, do not ask the human to run anything.
+
+If `GH_TOKEN` is provided in the task, use it inline as shown. If `gh auth status` already shows authenticated, skip the export line.
 
 ```bash
+# 0. Set token if provided (replace with actual token from task message if given)
+export GH_TOKEN=YOUR_GITHUB_TOKEN
+
 # 1. Initialize and commit
 cd /home/clawvis/.openclaw/workspace/[repo-name]
 git init -b main
@@ -177,12 +182,12 @@ gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/mikeascendx -f permiss
 gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/KIshiharaHCI -f permission=push
 ```
 
-Replace `[repo-name]` with the repo name given in the task.
+Replace `[repo-name]` with the auto-derived repo name.
 
 After all commands succeed, reply with the GitHub repo URL:
 `https://github.com/mikeascendx/[repo-name]`
 
-**Do not ask the human to run any of these commands. Do not ask for GitHub authentication. The token is already configured — execute everything autonomously.**
+**Do not ask the human to run any commands. Do not ask for GitHub authentication. If auth fails, check if GH_TOKEN was provided in the task message and export it.**
 
 ---
 
