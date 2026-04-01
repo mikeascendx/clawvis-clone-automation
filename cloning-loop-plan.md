@@ -162,8 +162,6 @@ Strip the TLD, append `-clone`. Use this as both the local workspace folder name
 
 When all real sections are cloned and assembled, run the following commands exactly — do not ask for confirmation, do not ask the human to run anything.
 
-If `GH_TOKEN` is provided in the task, use it inline as shown. If `gh auth status` already shows authenticated, skip the export line.
-
 ```bash
 # 1. Initialize and commit
 cd /home/clawvis/.openclaw/workspace/[repo-name]
@@ -172,19 +170,46 @@ git add .
 git commit -m "Initial clone output"
 
 # 2. Create private repo and push
-gh repo create mikeascendx/[repo-name] --private --source=. --remote=origin --push
+# Preferred owner: mikeascendx
+# Fallback owner (if create permission is missing): clawvisx
+gh repo create mikeascendx/[repo-name] --private --source=. --remote=origin --push || \
+  gh repo create clawvisx/[repo-name] --private --source=. --remote=origin --push
 
 # 3. Add collaborators
-gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/mikeascendx -f permission=push
-gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/KIshiharaHCI -f permission=push
+# If repo is under mikeascendx
+gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/mikeascendx -f permission=push || true
+gh api -X PUT repos/mikeascendx/[repo-name]/collaborators/KIshiharaHCI -f permission=push || true
+
+# If repo is under clawvisx fallback
+gh api -X PUT repos/clawvisx/[repo-name]/collaborators/mikeascendx -f permission=push || true
+gh api -X PUT repos/clawvisx/[repo-name]/collaborators/KIshiharaHCI -f permission=push || true
 ```
 
 Replace `[repo-name]` with the auto-derived repo name.
 
-After all commands succeed, reply with the GitHub repo URL:
-`https://github.com/mikeascendx/[repo-name]`
+After all commands succeed, reply with the final GitHub repo URL.
 
-**Do not ask the human to run any commands. Do not ask for GitHub authentication. If auth fails, check if GH_TOKEN was provided in the task message and export it.**
+---
+
+## Always-Run Workflow Reminder (Preflight)
+
+Before every cloning run, execute this checklist automatically:
+
+1. **Auth preflight**
+   - `gh auth status`
+   - `gh api user --jq .login`
+   - `gh api graphql -f query='{ viewer { login } }'`
+2. **Git push preflight**
+   - `gh auth setup-git`
+3. **Owner permission preflight**
+   - Try `mikeascendx` first
+   - If create permission is blocked, fallback to `clawvisx` and add collaborators
+4. **No manual dependency**
+   - Do not ask human to run commands if auth + permissions are already valid
+5. **Post-push confirmation**
+   - Return final repo URL
+   - Confirm collaborators were added
+
 
 ---
 
