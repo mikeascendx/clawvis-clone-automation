@@ -1,117 +1,108 @@
 # Website Cloning Automation Loop (Clawvis)
 
 ## Objective
-Automate the **clone phase** end-to-end so human time is focused on redesign and client-facing quality.
+Automate the clone-validate-fix cycle section by section using Claude Code custom skills — no complicated setup, just prove the idea works first.
 
 ---
 
-## Problem to Solve
-Current bottleneck is not raw generation speed, but loop reliability:
+## Core Concept
 
-1. Implement clone step
-2. Validate against source
-3. Detect mismatch
-4. Fix deltas
-5. Repeat until quality threshold
+The loop mirrors what you'd do manually with Anti-Gravity:
+1. Open the target website in a browser
+2. Screenshot a section
+3. Give the screenshot to the model and tell it to clone that section
+4. Check the output — fix text deformation, spacing issues, etc.
+5. Move to the next section and repeat
 
-Models drift without a strict loop + hard validation gates.
-
----
-
-## Proposed OpenClaw Loop Architecture
-
-## A) Session Roles
-- **Main session (Clawvis):** planning, control, reporting to Kenji/Mike
-- **Isolated worker session(s):** implementation + validation cycles for each website
-
-## B) Loop Stages (per target page)
-1. **Input capture**
-   - Target URL(s), screenshot baseline, viewport spec (desktop/mobile)
-2. **Initial implementation**
-   - Generate HTML/CSS/JS clone scaffold
-3. **Automated validation**
-   - Pixel/layout checks (structure + spacing + typography + responsive behavior)
-   - DOM/component parity checks where possible
-4. **Delta scoring**
-   - Assign mismatch score by section (header/hero/cards/footer)
-5. **Patch iteration**
-   - Apply focused fixes to highest-impact diffs first
-6. **Stop criteria**
-   - Exit when score is below threshold or max iterations reached
-7. **Handoff**
-   - Deliver clone package for redesign phase
-
-## C) Guardrails
-- Hard cap on iteration count and token budget per page
-- Save checkpoints every iteration (`/artifacts/iter-N`)
-- If loop stalls for 2 cycles, escalate with concise blocker report
+Everything below is just that loop, made autonomous.
 
 ---
 
-## Validation Strategy (Practical)
+## Architecture (BMAD-style, optimized for cloning)
 
-## Primary checks
-- Desktop screenshot diff (full page)
-- Mobile screenshot diff
-- Key section bounding boxes alignment
-- Font-size and spacing drift thresholds
-
-## Secondary checks
-- Navigation and CTA positions
-- Image sizing/crop parity
-- Scroll behavior and breakpoints
-
-## Suggested threshold
-- Pass when visual mismatch score <= 10% (tune after first 3 test sites)
+Four components. Three are Claude Code custom skills, one is an agent.
 
 ---
 
-## Heartbeat Setup (30m)
-Heartbeat purpose: continue highest-impact unfinished cloning task autonomously.
-
-## Heartbeat behavior
-On each heartbeat:
-1. Load active cloning queue
-2. Resume the top-priority target
-3. Execute **one full implement→validate→fix cycle**
-4. Persist iteration result + score
-5. If blocked, alert with exact blocker
-6. If no actionable work, `HEARTBEAT_OK`
+### 1. Orchestration Agent (Heartbeat / Cron)
+- Runs as a cron job or heartbeat
+- Maintains an ordered queue of sections to process (top to bottom of the page)
+- Waits for each skill/agent to finish before directing the next step
+- Creates and initializes new agents as needed
+- Tracks which sections are done, which need fixing, and what's next
+- **Max 3 fix attempts per section** — if Validation still reports issues after 3 tries, log it and move on rather than looping forever
 
 ---
 
-## Suggested HEARTBEAT.md
+### 2. Plan Skill
+Uses Playwright (or similar browser tool) to analyze and capture the target section.
 
-```md
-# Cloning Automation Heartbeat
+**What it does:**
+- Opens the target URL in a real browser
+- Uses DevTools to extract:
+  - Font family and size
+  - Hex color codes
+- Extracts assets needed for the section: icons, images
+- Filters out files not relevant to the current section
+- Takes a screenshot of the full section
+- Crops to just the section being cloned
 
-- Continue highest-priority unfinished cloning task.
-- Run one cycle: implement -> validate -> fix.
-- Save iteration summary with mismatch score.
-- If blocked for external reason (auth/captcha/missing assets), alert with blocker + next action.
-- If no actionable task exists, reply HEARTBEAT_OK.
+**Returns to Orchestration Agent:**
+- Saves all outputs to `/workspace/section-N/` (screenshot, assets, extracted data)
+- Handover prompt detailing all findings (fonts, colors, asset paths, structure notes)
+
+---
+
+### 3. Implementation Agent
+- Initialized by the Orchestration Agent
+- Receives the plan output (screenshot + handover prompt from `/workspace/section-N/`)
+- Generates the HTML/CSS clone of that section
+- Saves output as `/workspace/section-N/clone.html`
+- Returns the file path back to Orchestration
+
+---
+
+### 4. Validation Agent
+Similar to the Plan Skill — uses a real browser.
+
+**What it does:**
+- Opens `/workspace/section-N/clone.html` in a real browser
+- Takes a screenshot at the same viewport as the Plan Skill
+- Compares it visually against the reference screenshot from the Plan Skill
+- Identifies what still needs fixing (text deformation, spacing, colors, layout)
+
+**Returns to Orchestration Agent:**
+- Analysis of what's wrong
+- Specific fix instructions
+- Orchestration decides: fix and re-validate, or move to next section
+
+---
+
+## The Loop
+
+```
+Orchestration
+    ↓
+Plan Skill (screenshot + extract)
+    ↓
+Implementation Agent (clone the section)
+    ↓
+Validation Agent (compare + report)
+    ↓
+Orchestration (fix issues → re-run Implementation → re-validate, or advance to next section)
 ```
 
----
-
-## Tooling Focus
-- OpenClaw agent loop as orchestrator
-- Browser automation + screenshot capture for validation
-- Optional secondary model benchmarking (MiniMax/other) only after baseline loop is stable
+Repeat per section until the page is done.
 
 ---
 
-## Execution Plan (Next)
-1. Build minimal pipeline on 1 real target site (single page)
-2. Run 5 controlled iterations and log score trend
-3. Tune validation thresholds and stop criteria
-4. Expand to multi-page templates
-5. Productize into repeatable “clone package” output
+## Implementation Approach
+
+- Build as **custom Claude Code skills** (not OpenClaw — no complicated setup needed)
+- Start with a single page, single section to validate the concept
+- Keep it simple: does the loop work? Does it produce a usable clone? Tune from there.
 
 ---
 
-## Success Definition
-- Clone phase runs with minimal supervision
-- Iteration logs show improving score trend
-- Human intervention only for exceptions, not routine corrections
-- Throughput increase: more client projects handled in parallel
+## First Step
+Pick one real target page. Run the loop on one section. See if it works.
