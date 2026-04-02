@@ -61,17 +61,17 @@ Strategic decisions (niche, tone, competitors, copy) are made by humans before t
 
 ## Cloning Loop Integration
 
-The Implementation Agent receives a handover prompt from the Plan Skill containing:
-- Cropped screenshot of the section to clone
-- Extracted font family and hex color codes
-- Relevant asset file paths (icons, images)
+With the **Codex webapp + ai-website-cloner-template** approach, the clone skill handles the full pipeline automatically:
 
-The Validation Agent then compares the clone output against the reference screenshot and returns fix instructions to the Orchestration Agent.
+1. **Reconnaissance** — Screenshots target at desktop + mobile, extracts fonts/colors/assets via `getComputedStyle()`
+2. **Foundation Build** — Sets up fonts, design tokens, TypeScript interfaces, downloads assets
+3. **Component Spec & Dispatch** — Writes spec files per section, dispatches parallel builder agents
+4. **Page Assembly** — Wires sections into layout, verifies build passes
+5. **Visual QA** — Side-by-side screenshot comparison, fixes discrepancies
 
-Loop per section:
-```
-Plan Skill → Implementation Agent → Validation Agent → fix → re-validate → next section
-```
+The German SMB conventions above still apply — the clone skill extracts the target site's actual design values, so these serve as a quality check reference rather than generation input.
+
+**Output format:** Next.js + React + Tailwind (not plain HTML like the legacy Clawvis flow).
 
 ---
 
@@ -81,4 +81,4 @@ Plan Skill → Implementation Agent → Validation Agent → fix → re-validate
 - Cookie consent
 - Full contact/company identity in footer
 
-These are checked by the Validation Agent in the final pass.
+These are checked during Phase 5 (Visual QA) of the clone skill.

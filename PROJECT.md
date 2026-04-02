@@ -1,7 +1,7 @@
 # Website Cloning Automation — Project Doc
 
-**Status:** Building MVP
-**Last Updated:** 2026-04-01
+**Status:** Testing Codex Integration
+**Last Updated:** 2026-04-02
 **Owner:** Mike
 
 ---
@@ -16,18 +16,14 @@ Previously explored a similar direction with **Antigravity**: you screenshot a s
 
 ## Approach
 
-Build a few **custom Claude Code skills** that implement the cloning loop. No complicated infrastructure — first goal is to prove the concept works.
-
-Architecture is BMAD-style, optimized for cloning:
+**Clawvis** is an OpenClaw agent accessible via Telegram. It receives cloning tasks, orchestrates the process, and delivers results to GitHub. For the actual website building step, Clawvis delegates to the **Codex webapp** (`chatgpt.com/codex`) using the **ai-website-cloner-template** skill — instead of generating HTML/CSS on its own (which produced poor results).
 
 | Component | Role |
 |-----------|------|
-| **Orchestration Agent** | Cron/heartbeat. Manages the loop, waits for agents, directs next steps |
-| **Plan Skill** | Opens browser via Playwright, extracts fonts/colors/assets, screenshots and crops the target section, returns handover prompt to Orchestration |
-| **Implementation Agent** | Receives plan output, generates the HTML/CSS clone of that section |
-| **Validation Agent** | Opens clone in browser, screenshots it, compares against reference, returns fix list to Orchestration |
+| **Clawvis (OpenClaw)** | Telegram interface. Receives tasks, runs auth preflight, triggers Codex, handles GitHub delivery + collaborators |
+| **Codex + clone skill** | The website cloning engine. Extracts real CSS via `getComputedStyle()`, dispatches parallel builder agents, produces Next.js + React + Tailwind output, runs visual QA |
 
-The loop: `Plan → Implement → Validate → fix → re-validate → next section`
+The flow: `Kenji → Telegram → Clawvis → Codex $clone-website → Clawvis delivers to GitHub`
 
 ---
 
@@ -35,28 +31,41 @@ The loop: `Plan → Implement → Validate → fix → re-validate → next sect
 
 - Not SEO analysis
 - Not competitor research
-- Not complex infrastructure (no OpenClaw setup for now)
 
-Those are human decisions. The automation handles screenshot → clone → validate → fix, nothing else.
+Those are human decisions. The automation handles clone → validate → fix → deliver, nothing else.
 
 ---
 
 ## Tools
 
-- **Claude Code custom skills** — the primary build target
-- **Playwright** — browser automation for the Plan and Validation skills
-- Browser DevTools (via Playwright) — extract font family, hex color codes
+- **OpenClaw** — Clawvis agent platform (Telegram interface, orchestration)
+- **OpenAI Codex** — website cloning via `$clone-website` skill (`chatgpt.com/codex`)
+- **ai-website-cloner-template** — the clone skill (5-phase pipeline with parallel builders)
+- **Browser MCP** (Playwright/Browserbase) — browser automation used by the clone skill
 
 ---
 
+## Pivot: Codex Webapp + Clone Skill (2026-04-02)
+
+Clawvis building websites on its own produced too-low quality output (pale, simple, unmatched colors/fonts). Kenji's direction: have Clawvis use the **OpenAI Codex webapp** (`chatgpt.com/codex`) with the **ai-website-cloner-template** skill for the website building step.
+
+The template already implements our Plan → Implement → Validate loop, but with:
+- Real CSS extraction (`getComputedStyle()`) instead of screenshot guessing
+- Parallel builder agents in git worktrees
+- Next.js + React + Tailwind output (production-grade)
+- Automated visual QA with side-by-side screenshot comparison
+
+See **CODEX-INTEGRATION.md** for full details.
+
 ## Action Items
 
-- [ ] Build Plan Skill: Playwright opens URL, DevTools extraction, screenshot + crop, returns handover prompt
-- [ ] Build Implementation Agent: takes plan handover, generates HTML/CSS clone
-- [ ] Build Validation Agent: screenshots clone output, compares to reference, returns fix list
-- [ ] Build Orchestration Agent: manages the loop between the three above
-- [ ] Test the full loop on one real section of one real page
-- [ ] Tune from there
+- [ ] Get ChatGPT Plus subscription active
+- [ ] Fork `ai-website-cloner-template` to `clawvisx` org
+- [ ] Connect repo to Codex webapp at `chatgpt.com/codex`
+- [ ] Test `$clone-website https://pala-consulting.de` in Codex
+- [ ] Compare output quality against Clawvis-only output
+- [ ] Share results with Kenji and decide: full Codex switch or hybrid
+- [ ] Wire Clawvis to trigger `codex exec "$clone-website [URL]"` instead of building solo
 
 ---
 
@@ -69,4 +78,5 @@ Automate screenshot → clone → validate → fix so the team focuses time on r
 ## Notes
 
 - Start with one section of one page. Get the loop working before expanding.
-- OpenClaw and MiniMax/MaxClaw are background context — see LEARNING-NOTES.md — but not the build target right now.
+- Clawvis runs on OpenClaw. MiniMax/MaxClaw are background context — see LEARNING-NOTES.md.
+- Output format changes: template produces Next.js + React + Tailwind instead of plain HTML. Decision pending on whether to keep this or convert.

@@ -1,21 +1,21 @@
 # Community Research — Background Reference
 
-Research on tools in this space. Kept as background context — our current build target is Claude Code custom skills, not OpenClaw or MaxClaw.
+Research on tools in this space. **Clawvis** (our OpenClaw agent on Telegram) now delegates website building to the **Codex webapp + ai-website-cloner-template** skill. Other tools listed below are background context.
 
-**Last Updated:** 2026-04-01
+**Last Updated:** 2026-04-02
 **Original research date:** 2026-03-31
 
 ---
 
 ## Current Direction
 
-We're building custom Claude Code skills with Playwright. The OpenClaw/MiniMax research below is background only — useful if we revisit those platforms later, but not the focus now.
+Clawvis runs on **OpenClaw** and is accessible via Telegram. For the website cloning step, Clawvis uses the **OpenAI Codex webapp** (`chatgpt.com/codex`) with the **ai-website-cloner-template** skill. See `CODEX-INTEGRATION.md` for setup and workflow details.
 
 ---
 
-## OpenClaw — Community Sentiment (Background)
+## OpenClaw — Community Sentiment (Clawvis Platform)
 
-OpenClaw hit 247,000+ GitHub stars in ~60 days. The community is split:
+Clawvis runs on OpenClaw. OpenClaw hit 247,000+ GitHub stars in ~60 days. The community is split:
 
 **Positive:** People are building full websites, running multi-agent teams on VPSs, automating code reviews. The multi-agent pattern (plan → implement → validate) is validated in the wild.
 
@@ -25,7 +25,7 @@ OpenClaw hit 247,000+ GitHub stars in ~60 days. The community is split:
 - 820+ malicious skills found on ClawHub (OpenClaw's skill registry)
 - Session sandbox escapes
 
-If OpenClaw ever comes back into scope, hardening is non-negotiable before deploying anything.
+Since Clawvis runs on OpenClaw, hardening is important for production deployment.
 
 ---
 
@@ -51,8 +51,11 @@ Bottom line: MiniMax is interesting for high-volume repetitive tasks (cost/speed
 
 | Tool | Notes |
 |------|-------|
+| **ai-website-cloner-template** | **Our current tool.** 7K+ stars, MIT license. Agent skill for Codex/Claude Code/Cursor/etc. 5-phase pipeline with parallel builders, `getComputedStyle()` extraction, Next.js + React + Tailwind output. Repo: `github.com/JCodesMore/ai-website-cloner-template` |
+| **Perfect-Web-Clone** | Open-source, multi-agent, built on Claude Agent SDK + Playwright. Extracts real DOM/CSS (not screenshots). Highest fidelity alternative. Repo: `github.com/ericshang98/perfect-web-clone` |
+| **CopyWeb** | SaaS (`copyweb.ai`). URL/screenshot/Figma to code. Exports React, Vue, or HTML/CSS. Recommended as top pick for end-to-end UI-to-code in 2026 |
 | **Same.new** | AI website cloner, reportedly pixel-perfect. Has phishing abuse concerns — not for production use |
-| **Perfect-Web-Clone** | Open-source, multi-agent, built on Claude Agent SDK. Clones from CSS/HTML structure rather than screenshots |
+| **UXPilot** | SaaS (`uxpilot.ai/website-cloner`). URL input, generates editable layouts. Better for design exploration than exact cloning. Exports to Figma |
 
 ---
 
